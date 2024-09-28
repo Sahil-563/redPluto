@@ -1,3 +1,8 @@
+import HomeContent from "@/components/HomeContent";
 export default function Home() {
-  return <div></div>;
+  return (
+    <div>
+      <HomeContent />
+    </div>
+  );
 }
