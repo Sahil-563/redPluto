@@ -1,50 +1,58 @@
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import axios from "axios";
 import * as Yup from "yup";
 
+const LoginSchema = Yup.object().shape({
+  email: Yup.string().email("Invalid email").required("Required"),
+  password: Yup.string().required("Required"),
+});
+
 const Login = () => {
-  // Validation schema using Yup
-  const validationSchema = Yup.object({
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
-      .required("Password is required"),
-  });
-
-  // Handle form submission
-  const handleSubmit = (values) => {
-    console.log("Form Data:", values);
-    // You can make API calls here to log in the user
-  };
-
   return (
-    <div className="login-container">
-      <h1>Login</h1>
+    <div className="flex flex-col items-center justify-center h-screen">
+      <h1 className="mb-5 text-2xl">Login</h1>
       <Formik
         initialValues={{ email: "", password: "" }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
+        validationSchema={LoginSchema}
+        onSubmit={async (values) => {
+          try {
+            const response = await axios.post(
+              "http://localhost:5000/api/auth/login",
+              values
+            );
+            alert(response.data.message);
+          } catch (error) {
+            console.error(error);
+          }
+        }}
       >
-        {({ isSubmitting }) => (
-          <Form>
-            <div>
-              <label htmlFor="email">Email</label>
-              <Field type="email" name="email" />
-              <ErrorMessage name="email" component="div" className="error" />
-            </div>
-
-            <div>
-              <label htmlFor="password">Password</label>
-              <Field type="password" name="password" />
-              <ErrorMessage name="password" component="div" className="error" />
-            </div>
-
-            <div>
-              <button type="submit" disabled={isSubmitting}>
-                Login
-              </button>
-            </div>
+        {() => (
+          <Form className="w-80">
+            <Field
+              name="email"
+              type="email"
+              placeholder="Email"
+              className="border p-2 mb-2 w-full"
+            />
+            <ErrorMessage
+              name="email"
+              component="div"
+              className="text-red-600"
+            />
+            <Field
+              name="password"
+              type="password"
+              placeholder="Password"
+              className="border p-2 mb-2 w-full"
+            />
+            <ErrorMessage
+              name="password"
+              component="div"
+              className="text-red-600"
+            />
+            <button type="submit" className="bg-blue-500 text-white p-2 w-full">
+              Login
+            </button>
           </Form>
         )}
       </Formik>
